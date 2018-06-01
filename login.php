@@ -1,24 +1,34 @@
-<!DOCTYPE html>
-<html >
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=decive-width, user-scalable=no, initial-scale=1.0, maximun-scale=1.0, minimun-scale=1.0">
-    <title>Clínica Odontológica San Francisco</title>
-    <link rel="stylesheet" href="css/login.css">
-    <link rel="icon" type="image/x-svg" href="img/icono.svg">
-</head>
-<body>
-	<form class="login" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="post" name="login">
-        <h2>Clínica Odontológica San Francisco</h2>
-        <img src="img/icono.svg">
-        <input type="text" name="usuario" placeholder="Usuario" class="bordes" autofocus/>
-        <input type="password" name="password" placeholder="Contraseña" class="bordes"/>
-        <input type="submit" value="Ingresar"></input>
-        <?php  if(!empty($errores)): ?>
-          <ul>
-              <?php echo $errores; ?>
-          </ul>
-        <?php  endif; ?>
-      </form>
-</body>
-</html>
+<?php session_start();
+
+if (isset($_SESSION['usuario'])){
+	header('Location: index.php');
+}
+
+if($_SERVER['REQUEST_METHOD']=='POST'){
+	$usuario = filter_var(strtolower($_POST['usuario']),FILTER_SANITIZE_STRING);
+	$password = $_POST['password'];
+	$password = hash('sha512', $password);
+	$errores ='';	
+	try{
+		$conexion = new PDO('mysql:host=localhost;dbname=centromedico','root','12345678');
+             
+                
+	}catch(PDOException $e){
+		echo "Error: ". $e->getMessage();
+	}
+	$statement = $conexion -> prepare("SELECT * FROM 'usuarios' WHERE 'usuario'=\"usuario\" AND 'pass'=\"password\"");
+
+	$statement ->execute(array(':usuario'=> $usuario,':password'=> $password));
+
+	$resultado = $statement->fetch();
+	if($resultado == false){
+		$_SESSION['usuario'] = $usuario;
+		header('Location: index.php');
+	}else{
+		if ($resultado == false)
+		$errores = 'Datos incorrectos y/o invalidos!';
+		
+	}
+}
+	require 'vista/login.php';
+?>

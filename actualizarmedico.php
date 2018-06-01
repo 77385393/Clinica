@@ -2,7 +2,9 @@
 	if(!isset($_SESSION['usuario'])){
 	header('Location: login.php');
 	}
+	
 	require 'funciones.php';
+	
 	try{
 		$conexion = new PDO('mysql:host=localhost;dbname=centromedico','root','12345678');
 	}catch(PDOException $e){
@@ -38,18 +40,18 @@
 		':correo'=>$correo,
         ':id'=> $id
         ));
-        header('Location: usuarios.php');
+        header('Location: medicos.php');
 	}else{
-		$id_usuario = id_numeros($_GET['id']);
-		if(empty($id_usuario)){
-			header('Location: usuarios.php');
+		$id_medico = id_numeros($_GET['idMedico']);
+		if(empty($id_medico)){
+			header('Location: medicos.php');
 		}
-		$user = obtenerUser_id($conexion,$id_usuario);
+		$medico = obtener_medico_id($conexion,$id_medico);
 		
-		if(!$user){
-			header('Location: usuarios.php');
+		if(!$medico){
+			header('Location: medicos.php');
 		}
-		$user =$user[0];
+		$medico =$medico[0];
 	}
-	require 'vista/actualizarusuario.php';
+	require 'vista/actulizarmedico_vista.php';
 ?>
